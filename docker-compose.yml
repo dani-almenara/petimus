@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres:14.5-bullseye 
+    # restart: always
+    environment:
+      POSTGRES_USER: petimus
+      POSTGRES_DB: db_petimus
+      POSTGRES_PASSWORD: Passw0rd
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    #restart: always
+    ports:
+      - 8080:8080
