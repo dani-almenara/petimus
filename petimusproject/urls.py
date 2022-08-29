@@ -20,5 +20,5 @@ from corepetimus import views as corePetimusViews
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('', corePetimusViews.home ),
+    path('', corePetimusViews.home, name='home' ),
 ]
