@@ -1,8 +1,7 @@
-# from pyexpat import model
-# from turtle import update
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from datetime import datetime
 
 
 class PetimusType(models.Model):
@@ -17,10 +16,10 @@ class Petimus(models.Model):
         ('draft', _('Borrador')),
         ('published', _('Publicado')),
     )
-    author = models.ForeignKey(
+    user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='petimus')
     title = models.CharField(_('Título Petimus'), max_length=100)
-    descriprion = models.CharField(_('Descipción del Petimus'), max_length=500)
+    description = models.CharField(_('Descipción del Petimus'), max_length=500)
     petimus_type = models.ForeignKey(PetimusType, on_delete=models.CASCADE, 
         related_name='petimus_type')
     country = models.CharField(_('Pais'), max_length=50)
@@ -45,35 +44,51 @@ class Petimus(models.Model):
             self.title, self.city, self.created)
 
 
+# file will be uploaded to MEDIA_ROOT / user_<id>/<filename>
+def user_directory_path(instance, filename):
+    # ej 20220812-222922
+    date = datetime.now().strftime("%Y%m%d-%H%M%S")
+    return 'u_{0}/{2}-{1}'.format(instance.petimus_id.user_id, filename, date)
+
 class Image(models.Model):
     SOLVITUR_CHOICES = (
         (False, _('No')),
         (True, _('Si')),
     )
-    image = models.ImageField(upload_to='movie/images/')
-    url = models.URLField(blank=True)
+    image = models.ImageField(upload_to=user_directory_path)
+    # url = models.URLField(blank=True)
     description = models.CharField(max_length=250, blank=True, null=True)
     solvitur = models.BooleanField(
         _('Restuelto Si/No'), max_length=3, choices=SOLVITUR_CHOICES, default=False)
-    petimus_id = models.ForeignKey(Petimus, on_delete=models.CASCADE, related_name='petimus_images')
+    petimus = models.ForeignKey(Petimus, on_delete=models.CASCADE, related_name='petimus_images')
     created = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.url
 
 
 class Comment(models.Model):
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='author_comment')
-    petimus_id = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='petimus_comment')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user_comment')
+    petimus = models.ForeignKey(
+        Petimus, on_delete=models.CASCADE, related_name='petimus_comment')
     description = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return _('Comentario: {} . Usuario: {} . Petimus {}').format(
+            self.id, self.user, self.petimus_id.title)
 
 class Notification(models.Model):
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='author_notification')
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='user_notification')
     description = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True)
     view = models.DateTimeField(blank=True, null=True)
+    
+    def __str__(self):
+        return _('Notificación: {} del usuario {} leida: {}').format(
+            self.id, self.user, self.view)
     

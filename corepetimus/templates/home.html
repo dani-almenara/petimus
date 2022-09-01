@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,20 +11,19 @@
 <body>
     <div class="container">
         <a href="{% url 'home' %}">Home</a>
-        {% if not searchCity %}
         <h1>Welcome to Petimus</h1>
         <h2>This is the home page</h2>
-
-        <form action="">
-            <div class="mb-3">
-                <label class="form-label">Search city for view Petimus:</label>
-                <input type="text" name="searchCity"
-                class="form-control" />
-            </div>
-            <button type="submit" class="btn btn-primary">
-            Search
-            </button>
-        </form>
+        {% if not searchCity %}
+            <form action="">
+                <div class="mb-3">
+                    <label class="form-label">Search city for view Petimus:</label>
+                    <input type="text" name="searchCity"
+                    class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary">
+                Search
+                </button>
+            </form>
         {% else %}
             <form action="">
                 <div class="mb-3">
@@ -35,6 +35,21 @@
                 </div>
             </form>
             Searching for {{ searchCity }}
+            {% for p in petimus %}
+            <div v-for="petimus" class="col">
+                <div class="card">
+                    {% for i in p.petimus_images.all %}
+                        {% if i.image %}
+                            <img class="card-img-top" src="{% get_media_prefix %}/{{ i.image }}" alt="{{i.description}}">
+                        {% endif %}
+                    {% endfor %}
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ p.title }}</h5>
+                        <p class="card-text">{{ p.description }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         {% endif %}
     </div>
 </body>

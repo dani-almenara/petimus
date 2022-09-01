@@ -50,9 +50,9 @@ venv.bak/
 /site 
 
 # Visual Studio Code # 
-.vscode/* 
-!.vscode/settings.json 
-!.vscode/tasks.json 
-!.vscode/launch.json 
-!.vscode/extensions.json 
-.history
+.vscode/
+# !.vscode/settings.json 
+# !.vscode/tasks.json 
+# !.vscode/launch.json 
+# !.vscode/extensions.json 
+# .history
